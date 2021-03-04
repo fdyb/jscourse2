@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="order_form">
+    </form>
+    <button id = "create_order">Сделать заказ</button>
+    <div id="total"></div>
+    <script>
+
+        let userOrder;
+        let burger;
+
+        class Receipt {
+            constructor(title, price, calories) {
+                this.title = title;
+                this.price = price;
+                this.calories = calories;
+            }
+        }
+
+        class Food {
+            constructor(title, types, ingredients) {
+                this.title = title;
+                this.price = 0;
+                this.types = types; 
+                this.ingredients = ingredients; 
+            }
+            
+        }
+
+        class Order {
+            constructor(id, type, ingredients) {
+                this.id = id;
+                this.sum = 0;
+                this.calories = 0;
+                this.type = type; 
+                this.ingredients = [];
+                ingredients.forEach((item,i) => {
+                    item.included = false;
+                    this.ingredients[i] = item;
+                });
+            }
+
+            calcTotal() {
+                this.sum = this.type.price;
+                this.calories = this.type.calories;
+                this.ingredients.forEach(item => {
+                    if (item.included) {
+                        this.sum += item.price;
+                        this.calories += item.calories;
+                    }
+                });
+                document.querySelector('#total').innerText = `
+                Калории: ${this.calories}
+                Сумма: ${this.sum}
+                `;
+            }
+        }
+
+        function fetchFood() { 
+            let types = [new Receipt('Маленький',50,20),new Receipt('Большой',100,40)];
+            let ingredients = [new Receipt('С сыром',10,20),new Receipt('С салатом',20,5),new Receipt('С картофелем',15,10),new Receipt('посыпать приправой',15,0),new Receipt('полить майонезом',20,5)];
+            return new Food('Бургер', types, ingredients);
+        }
+
+        function renderForm(food) {
+            let order_form = document.querySelector('#order_form');
+            order_form.innerHTML = `
+            <fieldset id = "types">
+                <legend>Тип</legend>
+            </fieldset>
+            <fieldset id = "ingredients">
+                <legend>Добавки</legend>
+            </fieldset>
+            `;
+            food.types.forEach((item,i) => {
+                let radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'type';
+                radio.id = 'rd_'+i;
+                order_form.querySelector('#types').appendChild(radio);
+                radio.addEventListener('click', typeChange);
+                let label_for_radio = document.createElement('label');
+                label_for_radio.innerText = item.title;
+                label_for_radio.for = radio.id;
+                order_form.querySelector('#types').appendChild(label_for_radio);
+            });
+            order_form.querySelector('#rd_0').checked = true;
+            userOrder.type = food.types[0];
+            food.ingredients.forEach((item,i) => {
+                let p = document.createElement('p');
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'ingredients';
+                checkbox.id = 'ch_'+i;
+                p.appendChild(checkbox);
+                
+                checkbox.addEventListener('click', ingredientsChange);
+                let label_for_checkbox = document.createElement('label');
+                label_for_checkbox.innerText = item.title;
+                label_for_checkbox.for = checkbox.id;
+                p.appendChild(label_for_checkbox);
+                order_form.querySelector('#ingredients').appendChild(p);
+            });
+            userOrder.calcTotal();
+        }
+
+        function typeChange(e)  {
+            let id = e.target.id.split('_')[1];
+            userOrder.type = burger.types[id];
+            userOrder.calcTotal();
+        }
+
+        function ingredientsChange(e)  {
+            let id = e.target.id.split('_')[1];
+            userOrder.ingredients[id].included = e.target.checked;
+            userOrder.calcTotal();
+        }
+
+        function createOrder() { 
+            burger = fetchFood();
+            userOrder = new Order(1,burger.types[0], burger.ingredients);
+            renderForm(burger);
+        }
+
+        window.onload = () => {
+            document.querySelector('#create_order').addEventListener('click', createOrder);
+        };
+
+    </script>
+    
+</body>
+</html>
