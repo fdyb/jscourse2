@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <form name="feedBack" onsubmit="return validate();">
+        <label>Имя:
+            <input type="text" name="name">
+        </label>
+        <p class="error__message " id="name"> </p>
+        <label>Телефон:
+            <input type="text" name="phone">
+        </label>
+        <p class="error__message" id="phone"> </p>
+        <label>E-mail:
+            <input type="text" name="email">
+        </label>
+        <p class="error__message" id="email"> </p>
+        <label>Сообщение:
+            <input type="text" name="message">
+        </label>
+        <p class="error__message" id="message"> </p>
+        <input type="submit" value="Отправить">
+    </form>
+
+
+    <script>
+
+        // a. Имя содержит только буквы.
+        // b. Телефон имеет вид +7(000)000-0000.
+        // c. E-mail имеет вид mymail@mail.ru, или my.mail@mail.ru, или my-mail@mail.ru.
+        // d. Текст произвольный.
+        // e. Если одно из полей не прошло валидацию, необходимо выделить это поле красной рамкой и сообщить пользователю об ошибке.
+
+
+
+        function validate() {
+
+            let feedBackForm = document.forms.feedBack;
+            let validated = true;
+            feedBackForm.querySelectorAll(".error__message").forEach(item => item.innerText = "");
+            feedBackForm.querySelectorAll("input").forEach(item => item.style.borderColor = "grey");
+            let reg;
+            // проверка Имя
+            if (feedBackForm.elements.name.value.trim() == "") {
+                feedBackForm.elements.name.style.borderColor = "red";
+                feedBackForm.querySelector("#name").innerText = "Имя не может быть пустым...";
+                validated = false;
+            } else 
+            {
+                reg = /[^a-zа-яёЁ\s]/i;
+                if (reg.test(feedBackForm.elements.name.value)) {
+                    feedBackForm.elements.name.style.borderColor = "red";
+                    feedBackForm.querySelector("#name").innerText = "Введите корректное имя, могут быть использованы только символы A-z / А-я";
+                    validated = false;
+                }
+            }
+            
+            // проверка Телефон
+            if (feedBackForm.elements.phone.value.trim() == "") {
+                feedBackForm.elements.phone.style.borderColor = "red";
+                feedBackForm.querySelector("#phone").innerText = "Укажите телефон";
+                validated = false;
+            } else {
+                reg = /^\+7\([0-9]{3}\)[0-9]{3}-[0-9]{4}$/;
+                if (!reg.test(feedBackForm.elements.phone.value)) {
+                    feedBackForm.elements.phone.style.borderColor = "red";
+                    feedBackForm.querySelector("#phone").innerText = "Введите телефон в формате +7(000)000-0000";
+                    validated = false;
+                }
+            }
+            // проверка Почта
+            if (feedBackForm.elements.email.value.trim() == "") {
+                feedBackForm.elements.email.style.borderColor = "red";
+                feedBackForm.querySelector("#email").innerText = "Укажите почту";
+                validated = false;
+            } else {
+                reg = /^([a-z0-9_\.-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})$/;
+                if (!reg.test(feedBackForm.elements.email.value)) {
+                    feedBackForm.elements.email.style.borderColor = "red";
+                    feedBackForm.querySelector("#email").innerText = "Введите адрес электронной почты в формате mymail@mail.ru";
+                    validated = false;
+                }
+            }
+            if (feedBackForm.elements.message.value.trim() == "") {
+                feedBackForm.elements.message.style.borderColor = "red";
+                feedBackForm.querySelector("#message").innerText = "Введите сообщение..";
+                validated = false;
+            } 
+            return validated;
+        }
+
+
+        let text = `
+One: 'Hi Mary.' Two: 'Oh, hi.'
+One: 'How are you doing?'
+Two: 'I'm doing alright. How about you?'
+    One: 'Not too bad. The weather is great isn't it?'
+    Two: 'Yes. It's absolutely beautiful today.'
+One: 'I wish it was like this more frequently.'
+Two: 'Me too.'
+One: 'So where are you going now?'
+Two: 'I'm going to meet a friend of mine at the department store.'
+One: 'Going to do a little shopping?'
+Two: 'Yeah, I have to buy some presents for my parents.'
+One: 'What's the occasion?'
+    Two: 'It's their anniversary.'
+One: 'That's great. Well, you better get going. You don't want to be late.'
+Two: 'I'll see you next time.'
+One: 'Sure. Bye.'
+`;
+
+
+        console.log(text.replace(/'/g, '"')); // задание 1
+        console.log(text.replace(/'([^a-z])/g, '"$1')); // задание 2
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
